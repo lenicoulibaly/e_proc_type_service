@@ -1,0 +1,41 @@
+services:
+  postgres-db:
+    image: postgres:14.12
+    container_name: type_db_container
+    ports:
+      - "102:5432"
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        target: /var/lib/postgresql/data
+        source: type_db
+    environment:
+      POSTGRES_PASSWORD: yDHu_58
+      POSTGRES_USER: type_db_user
+      POSTGRES_DB: type_db
+  type_service:
+    build: .
+    image: lenicoulibaly/type_service:latest
+    container_name: type_service_container
+    environment:
+      EUREKA_CONTAINER_NAME: eureka-container
+      EUREKA_SERVER_URL: http://eureka-container:8761/eureka/
+      CONFIG_SERVER_URL: http://config-server-container:8888
+      PROFILES: dev
+    ports:
+      - "101:101"
+    networks:
+      - e_proc_network
+    depends_on:
+      - type_db_container
+    restart: unless-stopped
+
+volumes: 
+  type_db:
+
+networks:
+  e_proc_network:
+    external: true
+
+
+  #docker run -d --name oracle-db-container -p 1522:1521 -p 5500:5500 -e ORACLE_SID=XE -e ORACLE_PDB=e-proc -e ORACLE_PWD=1234 -e ENABLE_ARCHIVELOG=true -v oracle-data:/opt/oracle/oradata container-registry.oracle.com/database/express:21.3.0-xe
