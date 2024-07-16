@@ -2,6 +2,8 @@ services:
   postgres-db:
     image: postgres:14.12
     container_name: type_db_container
+    networks:
+      - e_proc_network
     ports:
       - "102:5432"
     restart: unless-stopped
@@ -22,10 +24,10 @@ services:
       EUREKA_SERVER_URL: http://eureka-container:8761/eureka/
       CONFIG_SERVER_URL: http://config-server-container:8888
       PROFILES: dev
-    ports:
-      - "101:101"
     networks:
       - e_proc_network
+    ports:
+      - "101:101"
     depends_on:
       - type_db_container
     restart: unless-stopped
